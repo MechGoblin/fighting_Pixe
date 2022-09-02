@@ -134,7 +134,7 @@
         <key>outputFormat</key>
         <enum type="SettingsBase::OutputFormat">RGBA8888</enum>
         <key>alphaHandling</key>
-        <enum type="SettingsBase::AlphaHandling">ClearTransparentPixels</enum>
+        <enum type="SettingsBase::AlphaHandling">KeepTransparentPixels</enum>
         <key>contentProtection</key>
         <struct type="ContentProtection">
             <key>key</key>
@@ -173,14 +173,128 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
-            <key type="filename">player/Sprites/Idle_right/Idle_right000.png</key>
-            <key type="filename">player/Sprites/Idle_right/Idle_right001.png</key>
-            <key type="filename">player/Sprites/Idle_right/Idle_right002.png</key>
-            <key type="filename">player/Sprites/Idle_right/Idle_right003.png</key>
-            <key type="filename">player/Sprites/Idle_right/Idle_right004.png</key>
-            <key type="filename">player/Sprites/Idle_right/Idle_right005.png</key>
-            <key type="filename">player/Sprites/Idle_right/Idle_right006.png</key>
-            <key type="filename">player/Sprites/Idle_right/Idle_right007.png</key>
+            <key type="filename">player/Sprites/Death_right/PL1_Death_right000.png</key>
+            <key type="filename">player/Sprites/Death_right/PL1_Death_right001.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>11,13,21,27</rect>
+                <key>scale9Paddings</key>
+                <rect>11,13,21,27</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">player/Sprites/Death_right/PL1_Death_right002.png</key>
+            <key type="filename">player/Sprites/Run_right/PL1_Run_right000.png</key>
+            <key type="filename">player/Sprites/Run_right/PL1_Run_right001.png</key>
+            <key type="filename">player/Sprites/Run_right/PL1_Run_right002.png</key>
+            <key type="filename">player/Sprites/Run_right/PL1_Run_right003.png</key>
+            <key type="filename">player/Sprites/Run_right/PL1_Run_right004.png</key>
+            <key type="filename">player/Sprites/Run_right/PL1_Run_right005.png</key>
+            <key type="filename">player/Sprites/Run_right/PL1_Run_right006.png</key>
+            <key type="filename">player/Sprites/Run_right/PL1_Run_right007.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>12,12,23,24</rect>
+                <key>scale9Paddings</key>
+                <rect>12,12,23,24</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">player/Sprites/Death_right/PL1_Death_right003.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>12,12,24,24</rect>
+                <key>scale9Paddings</key>
+                <rect>12,12,24,24</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">player/Sprites/Death_right/PL1_Death_right004.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>12,11,25,22</rect>
+                <key>scale9Paddings</key>
+                <rect>12,11,25,22</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">player/Sprites/Death_right/PL1_Death_right005.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>13,10,25,21</rect>
+                <key>scale9Paddings</key>
+                <rect>13,10,25,21</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">player/Sprites/Fall_right/PL1_Fall_right000.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>12,14,24,28</rect>
+                <key>scale9Paddings</key>
+                <rect>12,14,24,28</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">player/Sprites/Fall_right/PL1_Fall_right001.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>12,14,23,28</rect>
+                <key>scale9Paddings</key>
+                <rect>12,14,23,28</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">player/Sprites/Idle_right/PL1_Idle_right000.png</key>
+            <key type="filename">player/Sprites/Idle_right/PL1_Idle_right001.png</key>
+            <key type="filename">player/Sprites/Idle_right/PL1_Idle_right002.png</key>
+            <key type="filename">player/Sprites/Idle_right/PL1_Idle_right003.png</key>
+            <key type="filename">player/Sprites/Idle_right/PL1_Idle_right004.png</key>
+            <key type="filename">player/Sprites/Idle_right/PL1_Idle_right005.png</key>
+            <key type="filename">player/Sprites/Idle_right/PL1_Idle_right006.png</key>
+            <key type="filename">player/Sprites/Idle_right/PL1_Idle_right007.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0,0</point_f>
@@ -195,14 +309,8 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">player/Sprites/Run_right/Run_right000.png</key>
-            <key type="filename">player/Sprites/Run_right/Run_right001.png</key>
-            <key type="filename">player/Sprites/Run_right/Run_right002.png</key>
-            <key type="filename">player/Sprites/Run_right/Run_right003.png</key>
-            <key type="filename">player/Sprites/Run_right/Run_right004.png</key>
-            <key type="filename">player/Sprites/Run_right/Run_right005.png</key>
-            <key type="filename">player/Sprites/Run_right/Run_right006.png</key>
-            <key type="filename">player/Sprites/Run_right/Run_right007.png</key>
+            <key type="filename">player/Sprites/Jump_right/PL1_Jump_right000.png</key>
+            <key type="filename">player/Sprites/Jump_right/PL1_Jump_right001.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0,0</point_f>
@@ -211,9 +319,89 @@
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>12,12,23,24</rect>
+                <rect>10,13,19,27</rect>
                 <key>scale9Paddings</key>
-                <rect>12,12,23,24</rect>
+                <rect>10,13,19,27</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">player/Sprites/Take_Hit/PL1_Take_hit000.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>9,14,19,27</rect>
+                <key>scale9Paddings</key>
+                <rect>9,14,19,27</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">player/Sprites/Take_Hit/PL1_Take_hit001.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>12,14,24,27</rect>
+                <key>scale9Paddings</key>
+                <rect>12,14,24,27</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">player/Sprites/Take_Hit/PL1_Take_hit002.png</key>
+            <key type="filename">player/Sprites/Take_Hit/PL1_Take_hit003.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>11,14,21,27</rect>
+                <key>scale9Paddings</key>
+                <rect>11,14,21,27</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">player/Sprites/attack_right/PL1_attack_right000.png</key>
+            <key type="filename">player/Sprites/attack_right/PL1_attack_right001.png</key>
+            <key type="filename">player/Sprites/attack_right/PL1_attack_right002.png</key>
+            <key type="filename">player/Sprites/attack_right/PL1_attack_right003.png</key>
+            <key type="filename">player/Sprites/attack_right/PL1_attack_right005.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>26,17,53,35</rect>
+                <key>scale9Paddings</key>
+                <rect>26,17,53,35</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">player/Sprites/attack_right/PL1_attack_right004.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>27,17,53,35</rect>
+                <key>scale9Paddings</key>
+                <rect>27,17,53,35</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
@@ -240,9 +428,14 @@
         </map>
         <key>fileList</key>
         <array>
+            <filename>player/Sprites/Death_right</filename>
+            <filename>player/Sprites/Fall_right</filename>
             <filename>player/Sprites/Idle_right</filename>
-            <filename>shop</filename>
+            <filename>player/Sprites/Jump_right</filename>
             <filename>player/Sprites/Run_right</filename>
+            <filename>player/Sprites/Take_Hit</filename>
+            <filename>player/Sprites/attack_right</filename>
+            <filename>shop</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
