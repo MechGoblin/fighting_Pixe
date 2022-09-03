@@ -1,17 +1,13 @@
-import * as PIXI from "./pixi.mjs";
+import { Application, Graphics, Texture, Sprite, Loader, Ticker } from "./pixi.js";
 import { assetsMap } from "./assetsMap.js";
 import { Player } from "./Player.js";
 import { engine } from "./engine.js"
 
-let Application = PIXI.Application,
-    Graphics = PIXI.Graphics,
-    Texture = PIXI.Texture,
-    Sprite = PIXI.Sprite;
 
 // Create the application
 const app = new Application({
-    width: 1024,
-    height: 576,
+    width: innerWidth,
+    height: innerHeight,
     backgroundColor: 0xc2c2c2,
     view: document.getElementById("canvas"),
 });
@@ -30,9 +26,6 @@ const keys = {
     }
 }
 
-
-
-
 const runGame = () => {
     function decreaseTimer() {
         if (timer > 0) {
@@ -46,7 +39,7 @@ const runGame = () => {
     }
     //preloop
     const stage = app.stage;
-    let sheet = PIXI.Loader.shared.resources["../assets/test.json"].spritesheet; // To create animations from a spritesheet
+    let sheet = Loader.shared.resources["../assets/test.json"].spritesheet; // To create animations from a spritesheet
     let timer = 61
     let timerId = 0
     let play = false
@@ -54,13 +47,18 @@ const runGame = () => {
     let PL1attackDir = 9;
     let PL2attackDir = 9;
     //level
-    stage.addChild(new Sprite(Texture.from("background")));
-    stage.addChild(engine.createAnimatedSprite(sheet.animations["shop"], { x: 790, y: 304 }, 2.75, 0.2, 0.5, true)); //shop
+    let background = new Sprite(Texture.from("background"));
+    background.position = { x: 0, y: 0 }
+    background.scale = { x: innerWidth / background.width, y: innerHeight / background.height }
+    stage.addChild(background);
+    const GroundBox = new Graphics().beginFill(0x000000, 0.7).drawRect(0, innerHeight - 0.16 * innerHeight, innerWidth, innerHeight * 0.16).endFill();
+    stage.addChild(GroundBox);
+    stage.addChild(engine.createAnimatedSprite(sheet.animations["shop"], { x: 790, y: 304 }, 1, 0.2, { x: 0.5, y: 0.5 }, true)); //shop
     //players
     const player1 = new Player({
         position: {
-            x: 200,
-            y: 200
+            x: innerWidth - 0.9 * innerWidth,
+            y: innerHeight - 0.6 * innerHeight
         },
         velocity: {
             x: 0,
@@ -68,11 +66,12 @@ const runGame = () => {
         },
         fighterNumber: 1,
         frameNumbers: [7, 7, 1, 1, 3, 5, 5],
+        GroundBox
     });
     const player2 = new Player({
         position: {
-            x: 400,
-            y: 200
+            x: 0.9 * innerWidth,
+            y: innerHeight - 0.6 * innerHeight
         },
         velocity: {
             x: 0,
@@ -80,15 +79,19 @@ const runGame = () => {
         },
         fighterNumber: 2,
         frameNumbers: [3, 6, 1, 1, 2, 6, 3],
+        GroundBox
     });
     stage.addChild(player1.view)
     stage.addChild(player2.view)
         //black screen 
     const blackscreen = new Graphics().beginFill(0x000000, 1).drawRect(0, 0, canvas.width, canvas.height).endFill()
     stage.addChild(blackscreen);
+
+
+
     //Update Loop
-    let renderer = PIXI.autoDetectRenderer();
-    let ticker = PIXI.Ticker.shared;
+    let renderer = app.renderer;
+    let ticker = Ticker.shared;
     ticker.autoStart = false;
     ticker.stop();
 
@@ -113,59 +116,59 @@ const runGame = () => {
         player1.update();
         player2.update();
 
-
-        //player1 movement
+        console.log(player1._view.position.y)
+            //player1 movement
         player1.velocity.x = 0
             //move left
         if (!player1.dead) {
             if (keys.a.pressed && player1.lastKey === 'a') {
-                if (player1.view.position.x <= -225) {
+                if (player1.view.position.x <= -10) {
                     player1.velocity.x = 0
                 } else {
                     player1.velocity.x = -5
                 }
-                if (player1.animat[1].scale.x === 2.5)
-                    player1.animat[1].scale.x = -2.5;
+                if (player1.animat[1].scale.x > 0)
+                    player1.animat[1].scale.x = -1 * player1.animat[1].scale.x;
                 player1.switchSprite(1)
             }
             //move right
             else if (keys.d.pressed && player1.lastKey === 'd') {
-                if (player1.view.position.x >= 735) {
+                if (player1.view.position.x >= 950) {
                     player1.velocity.x = 0
                 } else {
                     player1.velocity.x = 5
                 }
-                if (player1.animat[1].scale.x !== 2.)
-                    player1.animat[1].scale.x = 2.5;
+                if (player1.animat[1].scale.x < 0.)
+                    player1.animat[1].scale.x = -1 * player1.animat[1].scale.x;
                 player1.switchSprite(1)
 
             } //Idle
             else if (player1.lastKey === 'd') {
-                if (player1.animat[0].scale.x !== 2.)
-                    player1.animat[0].scale.x = 2.5;
+                if (player1.animat[0].scale.x < 0)
+                    player1.animat[0].scale.x = -1 * player1.animat[0].scale.x;
                 player1.switchSprite(0) //player.switchSprite('idle_right')
             } else {
                 player1.switchSprite(0) //player.switchSprite('idle_left')
-                if (player1.animat[0].scale.x === 2.5)
-                    player1.animat[0].scale.x = -2.5;
+                if (player1.animat[0].scale.x > 0)
+                    player1.animat[0].scale.x = -1 * player1.animat[0].scale.x;
             }
             //jump
             if (player1.velocity.y < 0 && (player1.velocity.x > 0 || player1.lastKey === 'd')) {
-                if (player1.animat[2].scale.x !== 2.)
-                    player1.animat[2].scale.x = 2.5;
+                if (player1.animat[2].scale.x < 0)
+                    player1.animat[2].scale.x = -1 * player1.animat[2].scale.x;
                 player1.switchSprite(2) //('jump_right')
             } else if (player1.velocity.y < 0 && (player1.velocity.x < 0 || player1.lastKey === 'a')) {
                 player1.switchSprite(2) //('jump_left')
-                if (player1.animat[2].scale.x === 2.5)
-                    player1.animat[2].scale.x = -2.5;
+                if (player1.animat[2].scale.x > 0)
+                    player1.animat[2].scale.x = -1 * player1.animat[2].scale.x;
             } else if (player1.velocity.y > 0 && (player1.velocity.x > 0 || player1.lastKey === 'd')) {
                 player1.switchSprite(3) //('fall_right')
-                if (player1.animat[3].scale.x !== 2.)
-                    player1.animat[3].scale.x = 2.5;
+                if (player1.animat[3].scale.x < 0)
+                    player1.animat[3].scale.x = -1 * player1.animat[3].scale.x;
             } else if (player1.velocity.y > 0 && (player1.velocity.x < 0 || player1.lastKey === 'a')) {
                 player1.switchSprite(3) //('fall_left')
-                if (player1.animat[3].scale.x === 2.5)
-                    player1.animat[3].scale.x = -2.5;
+                if (player1.animat[3].scale.x > 0)
+                    player1.animat[3].scale.x = -1 * player1.animat[3].scale.x;
 
             }
         } else if (player1.animat[5].currentFrame === player1.animat[5].totalFrames - 1) {
@@ -177,7 +180,7 @@ const runGame = () => {
             player2.velocity.x = 0
                 //move left
             if (keys.ArrowLeft.pressed && player2.lastKey === 'ArrowLeft') {
-                if (player2.view.position.x <= -420) {
+                if (player2.view.position.x <= -960) {
                     player2.velocity.x = 0
                 } else {
                     player2.velocity.x = -5
@@ -188,7 +191,7 @@ const runGame = () => {
             }
             //move right
             else if (keys.ArrowRight.pressed && player2.lastKey === 'ArrowRight') {
-                if (player2.view.position.x >= 540) {
+                if (player2.view.position.x >= -10) {
                     player2.velocity.x = 0
                 } else {
                     player2.velocity.x = 5
@@ -349,5 +352,5 @@ const runGame = () => {
     })
 }
 
-PIXI.Loader.shared.add(assetsMap.sprites[0].name, assetsMap.sprites[0].url);
-PIXI.Loader.shared.add("../assets/test.json").load(runGame)
+Loader.shared.add(assetsMap.sprites[0].name, assetsMap.sprites[0].url);
+Loader.shared.add("../assets/test.json").load(runGame)

@@ -1,4 +1,4 @@
-import * as PIXI from "./pixi.mjs";
+import * as PIXI from "./pixi.js";
 
 
 export class engine {
@@ -46,6 +46,9 @@ export class engine {
         animatedSprite.position.x = position.x;
         animatedSprite.position.y = position.y;
         animatedSprite.scale.set(scaleVal);
+        animatedSprite.scale.x = innerWidth / animatedSprite.width * 0.25;
+        animatedSprite.scale.y = innerHeight / animatedSprite.height * 0.4;
+
         animatedSprite.animationSpeed = animatVal;
         animatedSprite.anchor = anchor;
         if (Play) {
