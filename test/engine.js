@@ -42,21 +42,11 @@ export class engine {
             return textures;
         }
         //
-    static UpdateEveryOne(Everyone = []) {
-
-        Everyone.forEach((value) => {
-            console.log(value)
-            value.scale.x *= innerWidth / innerWidthBack;
-            value.scale.y *= innerHeight / innerHeightBack;
-        });
-    }
-    static createAnimatedSprite(textureNames, position = { x: 0, y: 0 }, scaleVal = { x: 1, y: 1 }, animatVal = 1, anchor = { x: 0, y: 0 }, Play = false) {
+    static createAnimatedSprite(textureNames, position = { x: 0, y: 0 }, scaleVal = 1, animatVal = 1, anchor = { x: 0, y: 0 }, Play = false) {
         const animatedSprite = new PIXI.AnimatedSprite(textureNames);
         animatedSprite.position.x = position.x;
         animatedSprite.position.y = position.y;
-        animatedSprite.scale.x = scaleVal.x;
-        animatedSprite.scale.y = scaleVal.y;
-
+        animatedSprite.scale.set(scaleVal);
         animatedSprite.scale.x = innerWidth / animatedSprite.width * 0.25;
         animatedSprite.scale.y = innerHeight / animatedSprite.height * 0.4;
 
