@@ -42,13 +42,26 @@ export class engine {
             return textures;
         }
         //
-    static UpdateEveryOne(Everyone = []) {
+    static UpdatePlayer({ player, kH, kW }) {
 
-        Everyone.forEach((value) => {
-            console.log(value)
-            value.scale.x *= innerWidth / innerWidthBack;
-            value.scale.y *= innerHeight / innerHeightBack;
+        player.animat.forEach((value) => {
+            value.scale.x *= kW;
+            value.scale.y *= kH;
+            value.position.x *= kW;
+            value.position.y *= kH;
         });
+        player.hitBox.scale.x *= kW;
+        player.hitBox.scale.y *= kH;
+        player.hitBox.position.x *= kW;
+        player.hitBox.position.y *= kH;
+        player.attackBoxRight.scale.x *= kW;
+        player.attackBoxRight.scale.y *= kH;
+        player.attackBoxRight.position.x *= kW;
+        player.attackBoxRight.position.y *= kH;
+        player.attackBoxLeft.scale.x *= kW;
+        player.attackBoxLeft.scale.y *= kH;
+        player.attackBoxLeft.position.x *= kW;
+        player.attackBoxLeft.position.y *= kH;
     }
     static createAnimatedSprite(textureNames, position = { x: 0, y: 0 }, scaleVal = { x: 1, y: 1 }, animatVal = 1, anchor = { x: 0, y: 0 }, Play = false) {
         const animatedSprite = new PIXI.AnimatedSprite(textureNames);

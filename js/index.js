@@ -1,22 +1,22 @@
-"use strict";
 import { Application, Graphics, Texture, Sprite, Loader, Ticker, settings } from "./pixi.js";
 import { assetsMap } from "./assetsMap.js";
 import { Player } from "./Player.js";
 import { engine } from "./engine.js"
-const devices = new RegExp('Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini', "i");
 
-if (devices.test(navigator.userAgent)) { //bad idea
-    screen.orientation.lock("landscape");
-}
+
+const devices = new RegExp('Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini', "i");
 // Create the application
-let app = new Application({
-    width: window.screen.width,
-    height: window.screen.height,
+const app = new Application({
+    resolution: window.devicePixelRatio,
+    autoDensity: true,
+    width: innerWidth,
+    height: innerHeight,
+    BackgroundAlpha: 0.5,
     backgroundColor: 0xc2c2c2,
     view: document.getElementById("canvas"),
-    SCALE_MODE: settings.SCALE_MODE.LINEAR
+    antialias: true,
+    resizeTo: window
 });
-// document.body.appendChild(app.view)
 
 const keys = {
     a: {
@@ -52,16 +52,24 @@ const runGame = () => {
     let playNow = false
     let PL1attackDir = 9;
     let PL2attackDir = 9;
-    const playerSpeedX = innerWidth / 260
-        //level
+    const playerSpeedX = innerWidth / 260;
+
+
+    //level
     let background = new Sprite(Texture.from("background"));
     background.position = { x: 0, y: 0 }
     background.scale = { x: innerWidth / background.width, y: innerHeight / background.height }
     stage.addChild(background);
-    let GroundBox = new Graphics().beginFill(0x000000, 0.7).drawRect(0, innerHeight - 0.16 * innerHeight, innerWidth, innerHeight * 0.16).endFill();
+
+
+    let GroundBox = new Graphics().beginFill(0xff0000, 0.7).drawRect(0, innerHeight - 0.16 * innerHeight, innerWidth, innerHeight * 0.16).endFill();
     stage.addChild(GroundBox);
+
+
     let shop = engine.createAnimatedSprite(sheet.animations["shop"], { x: innerWidth * 0.8, y: innerHeight * 0.635 }, { x: 1, y: 1 }, 0.2, { x: 0.5, y: 0.5 }, true)
-    stage.addChild(shop); //shop
+    stage.addChild(shop);
+
+
     const player1 = new Player({
         position: {
             x: innerWidth - 0.9 * innerWidth,
@@ -91,15 +99,24 @@ const runGame = () => {
     stage.addChild(player1.view)
     stage.addChild(player2.view)
 
+    //UI
+    const joistickBack = new Graphics().beginFill(0xffffff, 0.5).drawCircle(innerWidth * 1 / 16, innerHeight - innerHeight * 1 / 13, innerWidth * 1 / 32).endFill();
+    stage.addChild(joistickBack)
+    const joistickTarget = new Graphics().beginFill(0xffffff, 0.5).drawCircle(innerWidth * 1 / 16, innerHeight - innerHeight * 1 / 13, innerWidth * 1 / 64).endFill();
+    stage.addChild(joistickTarget)
+
     // black screen
     const blackscreen = new Graphics().beginFill(0x000000, 1).drawRect(0, 0, canvas.width, canvas.height).endFill()
     stage.addChild(blackscreen);
+
+
     let renderer = app.renderer;
     let ticker = Ticker.shared;
     ticker.autoStart = false;
     ticker.stop();
     let innerWidthBack = innerWidth;
     let innerHeightBack = innerHeight;
+    // window["shop"] = shop;
 
     function animate(time) {
         if (!playNow) {
@@ -116,34 +133,32 @@ const runGame = () => {
         //else if (play && playNow) {
         time = app.ticker.lastTime
         ticker.update(time);
-        // if (innerHeightBack != innerHeight || innerWidthBack != innerWidth) {
-        //     const kW = innerWidth / innerWidthBack;
-        //     const kH = innerHeight / innerHeightBack;
-        //     const dW = innerWidth - innerWidthBack;
-        //     const dH = innerHeight - innerHeightBack;
-        //     player1.animat.forEach((value) => {
-        //         value.scale.x *= kW;
-        //         value.scale.y *= kH;
-        //     });
-        //     shop.position.x += dW;
-        //     shop.position.y += dH;
-        //     console.log(dH);
-        //     shop.scale.x *= kW;
-        //     shop.scale.y *= kH;
-
-
-        //     console.log("qq")
-        //     GroundBox.scale.x *= kW;
-        //     GroundBox.scale.y *= kH;
-        //     background.scale.x *= kW;
-        //     background.scale.y *= kH;
-
-        //     innerWidthBack = innerWidth;
-        //     innerHeightBack = innerHeight;
-        //     app.view.width = innerWidth;
-        //     app.view.height = innerHeight;
-        // }
         renderer.render(stage);
+
+        //To adapt, enter elements and multiply by coefficients
+        if (innerHeightBack != innerHeight || innerWidthBack != innerWidth) {
+            let kW = innerWidth / innerWidthBack;
+            let kH = innerHeight / innerHeightBack;
+            engine.UpdatePlayer({ player: player1, kH: kH, kW: kW })
+            engine.UpdatePlayer({ player: player2, kH: kH, kW: kW })
+
+
+            GroundBox.scale.x *= kW;
+            GroundBox.scale.y *= kH;
+
+            background.scale.x *= kW;
+            background.scale.y *= kH;
+
+            shop.scale.x *= kW;
+            shop.scale.y *= kH;
+            shop.position.x *= kW;
+            shop.position.y *= kH;
+
+            innerWidthBack = innerWidth;
+            innerHeightBack = innerHeight;
+            app.width = innerWidth;
+            app.height = innerHeight;
+        }
         requestAnimationFrame(animate);
 
 
@@ -312,10 +327,13 @@ const runGame = () => {
     }
     animate(performance.now());
 
+    window.addEventListener("orientationchange", checkOrientationChange);
     if (devices.test(navigator.userAgent)) {
         addEventListener('touchstart', (event) => {
             play = true
+            joistickTarget.interactive = true;
         });
+
     } else {
         window.addEventListener('keydown', (event) => {
 
@@ -388,5 +406,74 @@ const runGame = () => {
     }
 
 }
+
+
+
+
+function checkOrientationChange() {
+    let screenOrientation = window.orientation;
+    switch (screenOrientation) {
+        case 0:
+            console.log('you are in portrait-primary mode');
+            break;
+        case 90:
+            goFullScreen();
+            break;
+        case 180:
+            goFullScreen();
+            break;
+        case 270:
+            goFullScreen();
+            break;
+        default:
+            console.log('implementation of screen orientation');
+    }
+}
+
+// function to request full screen of device browser
+
+function goFullScreen() {
+    var elem = document.getElementById("canvas");
+    if (elem.requestFullscreen) {
+        elem.requestFullscreen().then(data => {
+            lockScreenOrientation();
+        }, err => {
+            console.log('no');
+        });
+    } else if (elem.mozRequestFullScreen) { /* Firefox */
+        elem.mozRequestFullScreen().then(data => {
+            lockScreenOrientation();
+        }, err => {
+            console.log('Full Screen request failed');
+        });
+    } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+        elem.webkitRequestFullscreen().then(data => {
+            lockScreenOrientation();
+        }, err => {
+            console.log('Full Screen request failed');
+        });
+    } else if (elem.msRequestFullscreen) { /* IE/Edge */
+        elem.msRequestFullscreen().then(data => {
+            lockScreenOrientation();
+        }, err => {
+            console.log('Full Screen request failed');
+        });
+    }
+}
+
+//function to lock the screen. in this case the screen will be locked in portrait-primary mode.
+
+function lockScreenOrientation() {
+    screen.lockOrientationUniversal = screen.lockOrientation || screen.mozLockOrientation || screen.msLockOrientation;
+
+    if (screen.lockOrientationUniversal("landscape-primary")) {
+        // Orientation was locked
+    } else {
+        // Orientation lock failed
+    }
+}
+
+
+
 Loader.shared.add(assetsMap.sprites[0].name, assetsMap.sprites[0].url);
 Loader.shared.add("../assets/test.json").load(runGame)
