@@ -1,4 +1,4 @@
-import { Application, Graphics, Texture, Sprite, Loader, Ticker, settings } from "./pixi.js";
+import { Application, Graphics, Texture, Sprite, Loader, Ticker, settings, Container } from "./pixi.js";
 import { assetsMap } from "./assetsMap.js";
 import { Player } from "./Player.js";
 import { engine } from "./engine.js"
@@ -54,7 +54,6 @@ const runGame = () => {
     let PL2attackDir = 9;
     const playerSpeedX = innerWidth / 260;
 
-
     //level
     let background = new Sprite(Texture.from("background"));
     background.position = { x: 0, y: 0 }
@@ -100,10 +99,15 @@ const runGame = () => {
     stage.addChild(player2.view)
 
     //UI
-    const joistickBack = new Graphics().beginFill(0xffffff, 0.5).drawCircle(innerWidth * 1 / 16, innerHeight - innerHeight * 1 / 13, innerWidth * 1 / 32).endFill();
-    stage.addChild(joistickBack)
-    const joistickTarget = new Graphics().beginFill(0xffffff, 0.5).drawCircle(innerWidth * 1 / 16, innerHeight - innerHeight * 1 / 13, innerWidth * 1 / 64).endFill();
-    stage.addChild(joistickTarget)
+    const joistickBack = new Graphics().
+    beginFill(0xffffff, 0.5).drawCircle(innerWidth * 1 / 16, innerHeight - innerHeight * 1 / 13, innerWidth * 1 / 32).endFill();
+    const joistickTarget = new Graphics().
+    beginFill(0xffffff, 0.5).drawCircle(innerWidth * 1 / 16, innerHeight - innerHeight * 1 / 13, innerWidth * 1 / 64).endFill();
+
+    stage.addChild(joistickBack);
+
+    stage.addChild(joistickTarget);
+    var lastMove = null
 
     // black screen
     const blackscreen = new Graphics().beginFill(0x000000, 1).drawRect(0, 0, canvas.width, canvas.height).endFill()
@@ -153,6 +157,16 @@ const runGame = () => {
             shop.scale.y *= kH;
             shop.position.x *= kW;
             shop.position.y *= kH;
+
+            joistickBack.scale.x *= kW;
+            joistickBack.scale.y *= kH;
+            joistickBack.position.x *= kW;
+            joistickBack.position.y *= kH;
+
+            joistickTarget.scale.x *= kW;
+            joistickTarget.scale.y *= kH;
+            joistickTarget.position.x *= kW;
+            joistickTarget.position.y *= kH;
 
             innerWidthBack = innerWidth;
             innerHeightBack = innerHeight;
@@ -325,13 +339,99 @@ const runGame = () => {
         if (player1.health <= 0 || player2.health <= 0) engine.determineWinner({ player1, player2, timerId })
 
     }
-    animate(performance.now());
 
-    window.addEventListener("orientationchange", checkOrientationChange);
+    let lastpos = null;
+    animate(performance.now());
+    //window.addEventListener("orientationchange", checkOrientationChange);
     if (devices.test(navigator.userAgent)) {
         addEventListener('touchstart', (event) => {
             play = true
             joistickTarget.interactive = true;
+            lastMove = event
+        }, { once: true });
+        addEventListener('touchstart', (event) => {
+            lastMove = event
+            if (!player1.dead) {
+                if (lastMove.changedTouches[0].pageX - innerWidth * 1 / 16 >= 30.75) {
+                    joistickTarget.position.x = 30.75
+                } else if (lastMove.changedTouches[0].pageX - innerWidth * 1 / 16 <= -30.75)
+                    joistickTarget.position.x = -30.75
+                else {
+                    joistickTarget.position.x = lastMove.changedTouches[0].pageX - innerWidth * 1 / 16
+                }
+
+                if (lastMove.changedTouches[0].pageY - (innerHeight - innerHeight * 1 / 13) <= -30.75) {
+                    joistickTarget.position.y = -30.75
+                } else if (lastMove.changedTouches[0].pageY - (innerHeight - innerHeight * 1 / 13) >= 30.75)
+                    joistickTarget.position.y = 30.75
+                else {
+                    joistickTarget.position.y = lastMove.changedTouches[0].pageY - (innerHeight - innerHeight * 1 / 13)
+                }
+
+                if (joistickTarget.position.x > 5) {
+                    keys.d.pressed = true
+                    player1.lastKey = 'd'
+                    keys.a.pressed = false
+
+                } else if (joistickTarget.position.x < -5) {
+                    keys.a.pressed = true
+                    player1.lastKey = 'a'
+                    keys.d.pressed = false
+                }
+                if (joistickTarget.position.y < -joistickBack.height / 3) {
+                    if (player1.view.position.y < 0.2 * innerHeight) {
+                        player1.velocity.y += 0
+                    } else { player1.velocity.y = -playerSpeedX * 5 }
+                }
+                if (joistickTarget.position.y > joistickBack.height / 3) {
+                    player1.attack()
+                }
+            }
+
+        });
+        addEventListener('touchmove', (event) => {
+            lastMove = event
+            if (!player1.dead) {
+                if (lastMove.changedTouches[0].pageX - innerWidth * 1 / 16 >= 30.75) {
+                    joistickTarget.position.x = 30.75
+                } else if (lastMove.changedTouches[0].pageX - innerWidth * 1 / 16 <= -30.75)
+                    joistickTarget.position.x = -30.75
+                else {
+                    joistickTarget.position.x = lastMove.changedTouches[0].pageX - innerWidth * 1 / 16
+                }
+
+                if (lastMove.changedTouches[0].pageY - (innerHeight - innerHeight * 1 / 13) <= -30.75) {
+                    joistickTarget.position.y = -30.75
+                } else if (lastMove.changedTouches[0].pageY - (innerHeight - innerHeight * 1 / 13) >= 30.75)
+                    joistickTarget.position.y = 30.75
+                else {
+                    joistickTarget.position.y = lastMove.changedTouches[0].pageY - (innerHeight - innerHeight * 1 / 13)
+                }
+                if (joistickTarget.position.x > 5) {
+                    keys.d.pressed = true
+                    player1.lastKey = 'd'
+                    keys.a.pressed = false
+
+                } else if (joistickTarget.position.x < -5) {
+                    keys.a.pressed = true
+                    player1.lastKey = 'a'
+                    keys.d.pressed = false
+                }
+                if (joistickTarget.position.y < -joistickBack.height / 3) {
+                    if (player1.view.position.y < 0.2 * innerHeight) {
+                        player1.velocity.y += 0
+                    } else { player1.velocity.y = -playerSpeedX * 5 }
+                }
+                if (joistickTarget.position.y > joistickBack.height / 3) {
+                    player1.attack()
+                }
+            }
+        });
+        addEventListener('touchend', (event) => {
+            console.log("end")
+            joistickTarget.position = { x: 0, y: 0 }
+            keys.d.pressed = false
+            keys.a.pressed = false
         });
 
     } else {
@@ -406,73 +506,6 @@ const runGame = () => {
     }
 
 }
-
-
-
-
-function checkOrientationChange() {
-    let screenOrientation = window.orientation;
-    switch (screenOrientation) {
-        case 0:
-            console.log('you are in portrait-primary mode');
-            break;
-        case 90:
-            goFullScreen();
-            break;
-        case 180:
-            goFullScreen();
-            break;
-        case 270:
-            goFullScreen();
-            break;
-        default:
-            console.log('implementation of screen orientation');
-    }
-}
-
-// function to request full screen of device browser
-
-function goFullScreen() {
-    var elem = document.getElementById("canvas");
-    if (elem.requestFullscreen) {
-        elem.requestFullscreen().then(data => {
-            lockScreenOrientation();
-        }, err => {
-            console.log('no');
-        });
-    } else if (elem.mozRequestFullScreen) { /* Firefox */
-        elem.mozRequestFullScreen().then(data => {
-            lockScreenOrientation();
-        }, err => {
-            console.log('Full Screen request failed');
-        });
-    } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
-        elem.webkitRequestFullscreen().then(data => {
-            lockScreenOrientation();
-        }, err => {
-            console.log('Full Screen request failed');
-        });
-    } else if (elem.msRequestFullscreen) { /* IE/Edge */
-        elem.msRequestFullscreen().then(data => {
-            lockScreenOrientation();
-        }, err => {
-            console.log('Full Screen request failed');
-        });
-    }
-}
-
-//function to lock the screen. in this case the screen will be locked in portrait-primary mode.
-
-function lockScreenOrientation() {
-    screen.lockOrientationUniversal = screen.lockOrientation || screen.mozLockOrientation || screen.msLockOrientation;
-
-    if (screen.lockOrientationUniversal("landscape-primary")) {
-        // Orientation was locked
-    } else {
-        // Orientation lock failed
-    }
-}
-
 
 
 Loader.shared.add(assetsMap.sprites[0].name, assetsMap.sprites[0].url);
