@@ -53,11 +53,21 @@ export class Player {
             this.view.getChildAt(0).position.y - this.view.getChildAt(0).height / 2,
             this.view.getChildAt(0).width / 2,
             this.view.getChildAt(0).height).endFill();
+        this.rightBlockBox = new Graphics().beginFill(0x0000ff, 0.7).drawRect(
+            this.view.getChildAt(0).position.x + this.view.getChildAt(0).width / 4,
+            this.view.getChildAt(0).position.y - this.view.getChildAt(0).height / 2,
+            this.view.getChildAt(0).width / 2,
+            this.view.getChildAt(0).height).endFill();
+        this.leftBlockBox = new Graphics().beginFill(0x0000ff, 0.7).drawRect(
+            this.view.getChildAt(0).position.x - this.view.getChildAt(0).width / 1.55,
+            this.view.getChildAt(0).position.y - this.view.getChildAt(0).height / 2,
+            this.view.getChildAt(0).width / 2,
+            this.view.getChildAt(0).height).endFill();
         //debug Collision
         this.attackBoxRight.visible = true;
         this.attackBoxLeft.visible = true;
         this.hitBox.visible = true;
-        this._view.addChild(this.attackBoxRight, this.hitBox, this.attackBoxLeft)
+        this._view.addChild(this.attackBoxRight, this.hitBox, this.attackBoxLeft, this.rightBlockBox, this.leftBlockBox)
             //mechanics
         this.lastKey = "";
         this.dead = false;
@@ -108,29 +118,35 @@ export class Player {
         this.isAttacking = true
     }
     takeHit() {
-            this.health -= 20
-            console.log(this.health)
+        this.health -= 20
+        console.log(this.health)
 
-            if (this.health <= 0 && (this.lastKey === 'd' || this.lastKey === "ArrowRight")) {
-                // if (this.animat[5].scale.x !== 2.)
-                //     this.animat[5].scale.x = 2.5;
-                this.dead = true
-                this.switchSprite(5)
-            } else if (this.health <= 0 && (this.lastKey === 'a' || this.lastKey === "ArrowLeft")) {
-                // if (this.animat[5].scale.x === 2.5)
-                //     this.animat[5].scale.x = -2.5;
-                this.dead = true
-                this.switchSprite(5)
-            } else if (this.lastKey === 'd' || this.lastKey === "ArrowRight") {
-                // if (this.animat[4].scale.x !== 2.)
-                //     this.animat[4].scale.x = 2.5;
-                this.switchSprite(4)
-            } else if (this.lastKey === 'a' || this.lastKey === "ArrowLeft") {
-                // if (this.animat[4].scale.x === 2.5)
-                //     this.animat[4].scale.x = -2.5;
-                this.switchSprite(4)
+        if (this.health <= 0 && (this.lastKey === 'd' || this.lastKey === "ArrowRight")) {
+            // if (this.animat[5].scale.x !== 2.)
+            //     this.animat[5].scale.x = 2.5;
+            this.dead = true
+            this.switchSprite(5)
+        } else if (this.health <= 0 && (this.lastKey === 'a' || this.lastKey === "ArrowLeft")) {
+            // if (this.animat[5].scale.x === 2.5)
+            //     this.animat[5].scale.x = -2.5;
+            this.dead = true
+            this.switchSprite(5)
+        } else if (this.lastKey === 'd' || this.lastKey === "ArrowRight") {
+            // if (this.animat[4].scale.x !== 2.)
+            //     this.animat[4].scale.x = 2.5;
+            this.switchSprite(4)
+        } else if (this.lastKey === 'a' || this.lastKey === "ArrowLeft") {
+            // if (this.animat[4].scale.x === 2.5)
+            //     this.animat[4].scale.x = -2.5;
+            this.switchSprite(4)
 
-            }
+        }
+    }
+    block() {
+            this.velocity.y = 0;
+            this.velocity.x = 0;
+
+            this.blocking = true;
         }
         //look number of animation in array "animat"
     switchSprite(nextAnimation) {

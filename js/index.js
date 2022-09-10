@@ -52,6 +52,8 @@ const runGame = () => {
     let playNow = false
     let PL1attackDir = 9;
     let PL2attackDir = 9;
+    let PL1BlockDir = 10;
+    let PL2BlockDir = 10;
     const playerSpeedX = innerWidth / 260;
 
     //level
@@ -99,14 +101,27 @@ const runGame = () => {
     stage.addChild(player2.view)
 
     //UI
-    const joistickBack = new Graphics().
+
+    const leftJoistickBack = new Graphics().
     beginFill(0xffffff, 0.5).drawCircle(innerWidth * 1 / 16, innerHeight - innerHeight * 1 / 13, innerWidth * 1 / 32).endFill();
-    const joistickTarget = new Graphics().
+    const leftJoistickTarget = new Graphics().
     beginFill(0xffffff, 0.5).drawCircle(innerWidth * 1 / 16, innerHeight - innerHeight * 1 / 13, innerWidth * 1 / 64).endFill();
+    stage.addChild(leftJoistickBack);
+    stage.addChild(leftJoistickTarget);
 
-    stage.addChild(joistickBack);
+    const rightJoistickBack = new Graphics().
+    beginFill(0xffffff, 0.5).drawCircle(innerWidth - innerWidth * 1 / 16, innerHeight - innerHeight * 1 / 13, innerWidth * 1 / 32).endFill();
+    const rightJoistickTarget = new Graphics().
+    beginFill(0xffffff, 0.5).drawCircle(innerWidth - innerWidth * 1 / 16, innerHeight - innerHeight * 1 / 13, innerWidth * 1 / 64).endFill();
+    stage.addChild(rightJoistickBack);
+    stage.addChild(rightJoistickTarget);
+    if (!devices.test(navigator.userAgent)) {
+        leftJoistickBack.visible = false
+        leftJoistickTarget.visible = false
+        rightJoistickBack.visible = false
+        rightJoistickTarget.visible = false
+    }
 
-    stage.addChild(joistickTarget);
     var lastMove = null
 
     // black screen
@@ -146,7 +161,6 @@ const runGame = () => {
             engine.UpdatePlayer({ player: player1, kH: kH, kW: kW })
             engine.UpdatePlayer({ player: player2, kH: kH, kW: kW })
 
-
             GroundBox.scale.x *= kW;
             GroundBox.scale.y *= kH;
 
@@ -158,15 +172,25 @@ const runGame = () => {
             shop.position.x *= kW;
             shop.position.y *= kH;
 
-            joistickBack.scale.x *= kW;
-            joistickBack.scale.y *= kH;
-            joistickBack.position.x *= kW;
-            joistickBack.position.y *= kH;
+            leftJoistickBack.scale.x *= kW;
+            leftJoistickBack.scale.y *= kH;
+            leftJoistickBack.position.x *= kW;
+            leftJoistickBack.position.y *= kH;
 
-            joistickTarget.scale.x *= kW;
-            joistickTarget.scale.y *= kH;
-            joistickTarget.position.x *= kW;
-            joistickTarget.position.y *= kH;
+            rightJoistickBack.scale.x *= kW;
+            rightJoistickBack.scale.y *= kH;
+            rightJoistickBack.position.x *= kW;
+            rightJoistickBack.position.y *= kH;
+
+            leftJoistickTarget.scale.x *= kW;
+            leftJoistickTarget.scale.y *= kH;
+            leftJoistickTarget.position.x *= kW;
+            leftJoistickTarget.position.y *= kH;
+
+            rightJoistickTarget.scale.x *= kW;
+            rightJoistickTarget.scale.y *= kH;
+            rightJoistickTarget.position.x *= kW;
+            rightJoistickTarget.position.y *= kH;
 
             innerWidthBack = innerWidth;
             innerHeightBack = innerHeight;
@@ -297,19 +321,28 @@ const runGame = () => {
         //determining the direction of attack
         if (player1.lastKey === "d") {
             PL1attackDir = 7;
+            PL1BlockDir = 10;
         } else {
             PL1attackDir = 9;
+            PL1BlockDir = 11;
+
         }
         if (player2.lastKey === "ArrowRight") {
             PL2attackDir = 7;
+            PL2BlockDir = 10;
         } else {
+            PL2BlockDir = 11;
             PL2attackDir = 9;
         }
         //detect Collision  player 1
         if (engine.rectangularCollision({
                 object1: player1._view.getChildAt(PL1attackDir),
                 object2: player2._view.getChildAt(8)
-            }) && player1.isAttacking && player1.animat[6].currentFrame === 4) {
+            }) && player1.isAttacking && player1.animat[6].currentFrame === 4 && (!player1.blocking ||
+                !engine.rectangularCollision({
+                    object1: player1._view.getChildAt(PL2attackDir),
+                    object2: player2._view.getChildAt(PL2BlockDir) // изменить в зависимости от направления
+                }))) {
             player2.takeHit()
             player1.isAttacking = false
             gsap.to('#enemyHealth', {
@@ -325,7 +358,11 @@ const runGame = () => {
         if (engine.rectangularCollision({
                 object1: player2._view.getChildAt(PL2attackDir),
                 object2: player1._view.getChildAt(8)
-            }) && player2.isAttacking && player2.animat[6].currentFrame === 2) {
+            }) && player2.isAttacking && player2.animat[6].currentFrame === 2 && (!player1.blocking ||
+                !engine.rectangularCollision({
+                    object1: player2._view.getChildAt(PL2attackDir),
+                    object2: player1._view.getChildAt(PL1BlockDir) // изменить в зависимости от направления
+                }))) {
             player1.takeHit()
             player2.isAttacking = false
             gsap.to('#playerHealth', {
@@ -342,96 +379,191 @@ const runGame = () => {
 
     let lastpos = null;
     animate(performance.now());
-    //window.addEventListener("orientationchange", checkOrientationChange);
+
     if (devices.test(navigator.userAgent)) {
+
         addEventListener('touchstart', (event) => {
             play = true
-            joistickTarget.interactive = true;
+            leftJoistickTarget.interactive = true;
+            rightJoistickTarget.interactive = true;
+
             lastMove = event
         }, { once: true });
-        addEventListener('touchstart', (event) => {
+
+
+        const LeftCont = document.getElementById("leftController")
+        LeftCont.addEventListener('touchstart', (event) => {
             lastMove = event
             if (!player1.dead) {
                 if (lastMove.changedTouches[0].pageX - innerWidth * 1 / 16 >= 30.75) {
-                    joistickTarget.position.x = 30.75
-                } else if (lastMove.changedTouches[0].pageX - innerWidth * 1 / 16 <= -30.75)
-                    joistickTarget.position.x = -30.75
-                else {
-                    joistickTarget.position.x = lastMove.changedTouches[0].pageX - innerWidth * 1 / 16
+                    leftJoistickTarget.position.x = 30.75
+                } else if (lastMove.changedTouches[0].pageX - innerWidth * 1 / 16 <= -30.75) {
+                    leftJoistickTarget.position.x = -30.75
+                } else {
+                    leftJoistickTarget.position.x = lastMove.changedTouches[0].pageX - innerWidth * 1 / 16
                 }
 
                 if (lastMove.changedTouches[0].pageY - (innerHeight - innerHeight * 1 / 13) <= -30.75) {
-                    joistickTarget.position.y = -30.75
-                } else if (lastMove.changedTouches[0].pageY - (innerHeight - innerHeight * 1 / 13) >= 30.75)
-                    joistickTarget.position.y = 30.75
-                else {
-                    joistickTarget.position.y = lastMove.changedTouches[0].pageY - (innerHeight - innerHeight * 1 / 13)
+                    leftJoistickTarget.position.y = -30.75
+                } else if (lastMove.changedTouches[0].pageY - (innerHeight - innerHeight * 1 / 13) >= 30.75) {
+                    leftJoistickTarget.position.y = 30.75
+                } else {
+                    leftJoistickTarget.position.y = lastMove.changedTouches[0].pageY - (innerHeight - innerHeight * 1 / 13)
                 }
 
-                if (joistickTarget.position.x > 5) {
+                if (leftJoistickTarget.position.x > 5) {
                     keys.d.pressed = true
                     player1.lastKey = 'd'
                     keys.a.pressed = false
 
-                } else if (joistickTarget.position.x < -5) {
+                } else if (leftJoistickTarget.position.x < -5) {
                     keys.a.pressed = true
                     player1.lastKey = 'a'
                     keys.d.pressed = false
                 }
-                if (joistickTarget.position.y < -joistickBack.height / 3) {
+                if (leftJoistickTarget.position.y < -leftJoistickBack.height / 3) {
                     if (player1.view.position.y < 0.2 * innerHeight) {
                         player1.velocity.y += 0
                     } else { player1.velocity.y = -playerSpeedX * 5 }
                 }
-                if (joistickTarget.position.y > joistickBack.height / 3) {
+                if (leftJoistickTarget.position.y > leftJoistickBack.height / 3) {
                     player1.attack()
                 }
             }
 
         });
-        addEventListener('touchmove', (event) => {
+        LeftCont.addEventListener('touchmove', (event) => {
             lastMove = event
             if (!player1.dead) {
                 if (lastMove.changedTouches[0].pageX - innerWidth * 1 / 16 >= 30.75) {
-                    joistickTarget.position.x = 30.75
-                } else if (lastMove.changedTouches[0].pageX - innerWidth * 1 / 16 <= -30.75)
-                    joistickTarget.position.x = -30.75
-                else {
-                    joistickTarget.position.x = lastMove.changedTouches[0].pageX - innerWidth * 1 / 16
+                    leftJoistickTarget.position.x = 30.75
+                } else if (lastMove.changedTouches[0].pageX - innerWidth * 1 / 16 <= -30.75) {
+                    leftJoistickTarget.position.x = -30.75
+                } else {
+                    leftJoistickTarget.position.x = lastMove.changedTouches[0].pageX - innerWidth * 1 / 16
                 }
 
                 if (lastMove.changedTouches[0].pageY - (innerHeight - innerHeight * 1 / 13) <= -30.75) {
-                    joistickTarget.position.y = -30.75
-                } else if (lastMove.changedTouches[0].pageY - (innerHeight - innerHeight * 1 / 13) >= 30.75)
-                    joistickTarget.position.y = 30.75
-                else {
-                    joistickTarget.position.y = lastMove.changedTouches[0].pageY - (innerHeight - innerHeight * 1 / 13)
+                    leftJoistickTarget.position.y = -30.75
+                } else if (lastMove.changedTouches[0].pageY - (innerHeight - innerHeight * 1 / 13) >= 30.75) {
+                    leftJoistickTarget.position.y = 30.75
+                } else {
+                    leftJoistickTarget.position.y = lastMove.changedTouches[0].pageY - (innerHeight - innerHeight * 1 / 13)
                 }
-                if (joistickTarget.position.x > 5) {
+                if (leftJoistickTarget.position.x > 5) {
                     keys.d.pressed = true
                     player1.lastKey = 'd'
                     keys.a.pressed = false
 
-                } else if (joistickTarget.position.x < -5) {
+                } else if (leftJoistickTarget.position.x < -5) {
                     keys.a.pressed = true
                     player1.lastKey = 'a'
                     keys.d.pressed = false
                 }
-                if (joistickTarget.position.y < -joistickBack.height / 3) {
+                if (leftJoistickTarget.position.y < -leftJoistickBack.height / 3) {
                     if (player1.view.position.y < 0.2 * innerHeight) {
                         player1.velocity.y += 0
                     } else { player1.velocity.y = -playerSpeedX * 5 }
                 }
-                if (joistickTarget.position.y > joistickBack.height / 3) {
+                if (leftJoistickTarget.position.y > leftJoistickBack.height / 3) {
                     player1.attack()
                 }
             }
         });
-        addEventListener('touchend', (event) => {
+        LeftCont.addEventListener('touchend', (event) => {
             console.log("end")
-            joistickTarget.position = { x: 0, y: 0 }
+            leftJoistickTarget.position = { x: 0, y: 0 }
             keys.d.pressed = false
             keys.a.pressed = false
+        });
+
+        const RightCont = document.getElementById("rightController")
+        RightCont.addEventListener('touchstart', (event) => {
+            lastMove = event
+            if (!player2.dead) {
+                if (lastMove.changedTouches[0].pageX - (innerWidth - innerWidth * 1 / 16) >= 30.75) {
+                    rightJoistickTarget.position.x = 30.75
+                } else if (lastMove.changedTouches[0].pageX - (innerWidth - innerWidth * 1 / 16) <= -30.75) {
+                    rightJoistickTarget.position.x = -30.75
+                } else {
+                    rightJoistickTarget.position.x = lastMove.changedTouches[0].pageX - (innerWidth - innerWidth * 1 / 16)
+                }
+
+                if (lastMove.changedTouches[0].pageY - (innerHeight - innerHeight * 1 / 13) <= -30.75) {
+                    rightJoistickTarget.position.y = -30.75
+                } else if (lastMove.changedTouches[0].pageY - (innerHeight - innerHeight * 1 / 13) >= 30.75) {
+                    rightJoistickTarget.position.y = 30.75
+                } else {
+                    rightJoistickTarget.position.y = lastMove.changedTouches[0].pageY - (innerHeight - innerHeight * 1 / 13)
+                }
+
+                if (rightJoistickTarget.position.x > 5) {
+                    keys.ArrowRight.pressed = true
+                    player2.lastKey = 'ArrowRight'
+                    keys.ArrowLeft.pressed = false
+
+                } else if (rightJoistickTarget.position.x < -5) {
+                    keys.ArrowRight.pressed = true
+                    player2.lastKey = 'ArrowLeft'
+                    keys.ArrowLeft.pressed = false
+
+                }
+                if (rightJoistickTarget.position.y < -rightJoistickBack.height / 3) {
+                    if (player2.view.position.y < 0.2 * innerHeight) {
+                        player2.velocity.y += 0
+                    } else { player2.velocity.y = -playerSpeedX * 5 }
+                }
+                if (rightJoistickTarget.position.y > rightJoistickBack.height / 3) {
+                    player2.attack()
+                }
+            }
+            console.log(lastMove.changedTouches[0].pageX - (innerWidth - innerWidth * 1 / 16))
+        });
+        RightCont.addEventListener('touchmove', (event) => {
+            lastMove = event
+            if (!player2.dead) {
+                if (lastMove.changedTouches[0].pageX - (innerWidth - innerWidth * 1 / 16) >= 30.75) {
+                    rightJoistickTarget.position.x = 30.75
+                } else if (lastMove.changedTouches[0].pageX - (innerWidth - innerWidth * 1 / 16) <= -30.75) {
+                    rightJoistickTarget.position.x = -30.75
+                } else {
+                    rightJoistickTarget.position.x = lastMove.changedTouches[0].pageX - (innerWidth - innerWidth * 1 / 16)
+                }
+
+                if (lastMove.changedTouches[0].pageY - (innerHeight - innerHeight * 1 / 13) <= -30.75) {
+                    rightJoistickTarget.position.y = -30.75
+                } else if (lastMove.changedTouches[0].pageY - (innerHeight - innerHeight * 1 / 13) >= 30.75) {
+                    rightJoistickTarget.position.y = 30.75
+                } else {
+                    rightJoistickTarget.position.y = lastMove.changedTouches[0].pageY - (innerHeight - innerHeight * 1 / 13)
+                }
+
+                if (rightJoistickTarget.position.x > 5) {
+                    keys.ArrowRight.pressed = true
+                    player2.lastKey = 'ArrowRight'
+                    keys.ArrowLeft.pressed = false
+
+                } else if (rightJoistickTarget.position.x < -5) {
+                    keys.ArrowLeft.pressed = true
+                    player2.lastKey = 'ArrowLeft'
+                    keys.ArrowRight.pressed = false
+
+                }
+                if (rightJoistickTarget.position.y < -rightJoistickBack.height / 3) {
+                    if (player2.view.position.y < 0.2 * innerHeight) {
+                        player2.velocity.y += 0
+                    } else { player2.velocity.y = -playerSpeedX * 5 }
+                }
+                if (rightJoistickTarget.position.y > rightJoistickBack.height / 3) {
+                    player2.attack()
+                }
+            }
+        });
+        RightCont.addEventListener('touchend', (event) => {
+            console.log("end")
+            rightJoistickTarget.position = { x: 0, y: 0 }
+            keys.ArrowLeft.pressed = false
+            keys.ArrowRight.pressed = false
         });
 
     } else {
@@ -449,12 +581,15 @@ const runGame = () => {
                         player1.lastKey = 'a'
                         break
                     case 'w':
-                        if (player1.view.position.y < 150) {
+                        if (player1.view.position.y < 0.2 * innerHeight) {
                             player1.velocity.y += 0
-                        } else { player1.velocity.y = -20 }
+                        } else { player1.velocity.y = -playerSpeedX * 5 }
                         break
                     case 's':
                         player1.attack()
+                        break
+                    case 'f':
+                        player1.block()
                         break
                 }
             }
@@ -470,12 +605,15 @@ const runGame = () => {
                         player2.lastKey = 'ArrowLeft'
                         break
                     case 'ArrowUp':
-                        if (player2.position.y < 150) {
+                        if (player2.view.position.y < 0.2 * innerHeight) {
                             player2.velocity.y += 0
-                        } else { player2.velocity.y = -20 }
+                        } else { player2.velocity.y = -playerSpeedX * 5 }
                         break
                     case 'ArrowDown':
                         player2.attack()
+                        break;
+                    case '0':
+                        player2.block()
                         break;
                 }
             }
@@ -491,6 +629,9 @@ const runGame = () => {
                 case 'w':
                     //player.velocity.y = -10
                     break
+                case 'f':
+                    player1.blocking = false
+                    break;
 
                 case 'ArrowRight':
                     keys.ArrowRight.pressed = false
@@ -501,6 +642,9 @@ const runGame = () => {
                 case 'ArrowUp':
                     //
                     break
+                case '0':
+                    player2.blocking = false
+                    break;
             }
         })
     }
