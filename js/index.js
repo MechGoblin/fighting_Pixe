@@ -52,8 +52,6 @@ const runGame = () => {
     let playNow = false
     let PL1attackDir = 9;
     let PL2attackDir = 9;
-    let PL1BlockDir = 10;
-    let PL2BlockDir = 10;
     const playerSpeedX = innerWidth / 260;
 
     //level
@@ -318,31 +316,27 @@ const runGame = () => {
         } else if (player2.animat[5].currentFrame === player2.animat[5].totalFrames - 1) {
             player2.animat[5].gotoAndStop(player2.animat[5].totalFrames - 1)
         }
+
+
         //determining the direction of attack
         if (player1.lastKey === "d") {
             PL1attackDir = 7;
-            PL1BlockDir = 10;
         } else {
             PL1attackDir = 9;
-            PL1BlockDir = 11;
-
         }
         if (player2.lastKey === "ArrowRight") {
             PL2attackDir = 7;
-            PL2BlockDir = 10;
         } else {
-            PL2BlockDir = 11;
             PL2attackDir = 9;
         }
+
+
         //detect Collision  player 1
         if (engine.rectangularCollision({
                 object1: player1._view.getChildAt(PL1attackDir),
                 object2: player2._view.getChildAt(8)
-            }) && player1.isAttacking && player1.animat[6].currentFrame === 4 && (!player1.blocking ||
-                !engine.rectangularCollision({
-                    object1: player1._view.getChildAt(PL2attackDir),
-                    object2: player2._view.getChildAt(PL2BlockDir) // изменить в зависимости от направления
-                }))) {
+            }) && player1.isAttacking && player1.animat[6].currentFrame === 4 &&
+            !((player2.blocking && (PL1attackDir !== PL2attackDir)))) {
             player2.takeHit()
             player1.isAttacking = false
             gsap.to('#enemyHealth', {
@@ -358,11 +352,8 @@ const runGame = () => {
         if (engine.rectangularCollision({
                 object1: player2._view.getChildAt(PL2attackDir),
                 object2: player1._view.getChildAt(8)
-            }) && player2.isAttacking && player2.animat[6].currentFrame === 2 && (!player1.blocking ||
-                !engine.rectangularCollision({
-                    object1: player2._view.getChildAt(PL2attackDir),
-                    object2: player1._view.getChildAt(PL1BlockDir) // изменить в зависимости от направления
-                }))) {
+            }) && player2.isAttacking && player2.animat[6].currentFrame === 2 &&
+            !((player1.blocking && (PL1attackDir !== PL2attackDir)))) {
             player1.takeHit()
             player2.isAttacking = false
             gsap.to('#playerHealth', {
@@ -583,7 +574,7 @@ const runGame = () => {
                     case 'w':
                         if (player1.view.position.y < 0.2 * innerHeight) {
                             player1.velocity.y += 0
-                        } else { player1.velocity.y = -playerSpeedX * 5 }
+                        } else { player1.velocity.y = -playerSpeedX * 3 }
                         break
                     case 's':
                         player1.attack()
@@ -596,7 +587,6 @@ const runGame = () => {
             if (!player2.dead) {
                 switch (event.key) {
                     case 'ArrowRight':
-                        console.log("qq")
                         keys.ArrowRight.pressed = true
                         player2.lastKey = 'ArrowRight'
                         break
@@ -607,7 +597,7 @@ const runGame = () => {
                     case 'ArrowUp':
                         if (player2.view.position.y < 0.2 * innerHeight) {
                             player2.velocity.y += 0
-                        } else { player2.velocity.y = -playerSpeedX * 5 }
+                        } else { player2.velocity.y = -playerSpeedX * 3 }
                         break
                     case 'ArrowDown':
                         player2.attack()

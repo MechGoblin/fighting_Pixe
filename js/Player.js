@@ -53,21 +53,12 @@ export class Player {
             this.view.getChildAt(0).position.y - this.view.getChildAt(0).height / 2,
             this.view.getChildAt(0).width / 2,
             this.view.getChildAt(0).height).endFill();
-        this.rightBlockBox = new Graphics().beginFill(0x0000ff, 0.7).drawRect(
-            this.view.getChildAt(0).position.x + this.view.getChildAt(0).width / 4,
-            this.view.getChildAt(0).position.y - this.view.getChildAt(0).height / 2,
-            this.view.getChildAt(0).width / 2,
-            this.view.getChildAt(0).height).endFill();
-        this.leftBlockBox = new Graphics().beginFill(0x0000ff, 0.7).drawRect(
-            this.view.getChildAt(0).position.x - this.view.getChildAt(0).width / 1.55,
-            this.view.getChildAt(0).position.y - this.view.getChildAt(0).height / 2,
-            this.view.getChildAt(0).width / 2,
-            this.view.getChildAt(0).height).endFill();
+
         //debug Collision
         this.attackBoxRight.visible = true;
         this.attackBoxLeft.visible = true;
         this.hitBox.visible = true;
-        this._view.addChild(this.attackBoxRight, this.hitBox, this.attackBoxLeft, this.rightBlockBox, this.leftBlockBox)
+        this._view.addChild(this.attackBoxRight, this.hitBox, this.attackBoxLeft)
             //mechanics
         this.lastKey = "";
         this.dead = false;
